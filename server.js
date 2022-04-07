@@ -72,7 +72,7 @@ if(args.debug){
     res.json({"message":"your API works! (200)"});
     res.status(200).end('200 OK')
 
-    app.get('/app/log/access',(req,res, next) =>{
+    app.get('/app/error',(req,res, next) =>{
       
       throw new Error('Error Test Succesful');
     })
