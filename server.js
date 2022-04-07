@@ -1,6 +1,7 @@
 
 const minimist = require("minimist")
-
+const args = minimist(process.argv.slice(2))
+console.log(args)
 const help = (`
 server.js [options]
 
@@ -31,11 +32,10 @@ var md5 = require("md5")
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-const args = minimist(process.argv.slice(2))
-console.log(args)
-args["port"]
+
+
 const port = args.port || 5000
-console.log(args)
+
 // Store help text 
 
 
