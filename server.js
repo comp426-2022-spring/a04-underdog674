@@ -73,8 +73,8 @@ if(args.debug){
     res.status(200).end('200 OK')
 
     app.get('/app/log/access',(req,res, next) =>{
-      errorx = new ERROR;
-      throw errorx;
+      
+      throw new Error('Error Test Succesful');
     })
 
 })
@@ -97,6 +97,61 @@ app.post("/app/new/user",(req,res,next) => {
     const info = stmt.run(data.user, data.pass)
     res.status(200).json(info)
 })
+
+
+
+app.get("/app/users", (req, res) => {	
+  try {
+      const stmt = db.prepare('SELECT * FROM userinfo').all()
+      res.status(200).json(stmt)
+  } catch {
+      console.error(e)
+  }
+});
+
+// READ a single user (HTTP method GET) at endpoint /app/user/:id
+app.get("/app/user/:id", (req, res) => {
+  try {
+      const stmt = db.prepare('SELECT * FROM userinfo WHERE id = ?').get(req.params.id);
+      res.status(200).json(stmt)
+  } catch (e) {
+      console.error(e)
+  }
+
+});
+
+// UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
+app.patch("/app/update/user/:id", (req, res) => {
+  let data = {
+      user: req.body.username,
+      pass: req.body.password
+  }
+  const stmt = db.prepare('UPDATE userinfo SET username = COALESCE(?,username), password = COALESCE(?,password) WHERE id = ?')
+  const info = stmt.run(data.user, data.pass, req.params.id)
+  res.status(200).json(info)
+});
+
+// DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
+app.delete("/app/delete/user/:id", (req, res) => {
+  const stmt = db.prepare('DELETE FROM userinfo WHERE id = ?')
+  const info = stmt.run(req.params.id)
+  res.status(200).json(info)
+});
+// Default response for any other request
+app.use(function(req, res){
+res.json({"message":"Endpoint not found. (404)"});
+  res.status(404);
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+      console.log('Server stopped')
+  })
+})
+
+
+
+
 
 app.get('/app/flips/:number/',(req,res) =>{
   res.setHeader("showing", "alex")
