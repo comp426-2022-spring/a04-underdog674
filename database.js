@@ -17,13 +17,13 @@ if(row === undefined){
 
 
 const sqlInit = `
-CREATE TABLE userinfo ( id INTEGER PRIMARY KEY, remoteaddr TEXT, remoteuser TEXT, time TEXT, method TEXT, url TEXT, protocol TEXT, httpversion TEXT, status TEXT, referer TEXT, useragent TEXT);
+CREATE TABLE acesslog ( id INTEGER PRIMARY KEY, remoteaddr TEXT, remoteuser TEXT, time TEXT, method TEXT, url TEXT, protocol TEXT, httpversion TEXT, status TEXT, referer TEXT, useragent TEXT);
 
 `;
 
 db.exec(sqlInit);
 
-console.log('Your database has been initialized with a new table and two entries containing a username and password.');
+console.log('Your database has been initialized with some logs.');
 }
 else{
     console.log('Database exists')
