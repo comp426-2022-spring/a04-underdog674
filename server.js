@@ -27,6 +27,8 @@ const express = require('express')
 
 const app = express()
 const db = require("./database.js")
+const fs = require('fs')
+const morgan = require('morgan')
 var md5 = require("md5")
 
 app.use(express.json())
@@ -75,9 +77,9 @@ app.use(morgan('combined', { stream: accesLog }))
 
 if(args.debug){
   app.get('/app/log/access',(req,res, next) => {
+    const stmt = db.prepare('SELECT * FROM accesslog').all()
     
-    res.json({"message":"your API works! (200)"});
-    res.status(200).end('200 OK')
+    res.status(200).json(stmt)
   })
     app.get('/app/error',(req,res, next) =>{
       
