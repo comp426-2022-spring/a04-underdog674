@@ -12,6 +12,27 @@ console.log(args)
 args["port"]
 const port = args.port || 5000
 
+//const helpMsg = "server.js [options]\n\n--por		Set the port number for the server to listen on. Must be an integer\n           between 1 and 65535.\n\n--debug	If set to true, creates endlpoints /app/log/access/ which returns\n              a JSON access log from the database and /app/error which throws \n              an error with the message \"Error test successful.\" Defaults to \n  false.\n\n--log		If set to false, no log files are written. Defaults to true.\n  Logs are always written to database.\n\n--help	Return this message and exit."
+const helpMsg = (`
+server.js [options]
+
+--port	Set the port number for the server to listen on. Must be an integer
+            between 1 and 65535.
+
+--debug	If set to true, creates endlpoints /app/log/access/ which returns
+            a JSON access log from the database and /app/error which throws 
+            an error with the message "Error test successful." Defaults to 
+            false.
+
+--log		If set to false, no log files are written. Defaults to true.
+            Logs are always written to database.
+
+--help	Return this message and exit.
+`)
+if(args.help || args.h){
+console.log(helpMsg)
+process.exit(0)
+}
 //const logging = (req,res,next) => {
   //  console.log(req.body.number)
   //  next()
@@ -19,13 +40,51 @@ const port = args.port || 5000
 //}
 
 
+app.use((req, res, next) =>{
+  let logdata = {
+    remoteaddr: req.ip,
+    remoteuser: req.user,
+    time: Date.now(),
+    method: req.method,
+    url: req.url,
+    protocol: req.protocol,
+    httpversion: req.httpVersion,
+    status: res.statusCode,
+    referer: req.headers['referer'],
+    useragent: req.headers['user-agent']
+}
+console.log(logdata);
+const stmt = db.prepare('INSERT INTO accesslog (remoteaddr,remoteuser,time,method,url,protocol,httpversion,status,referer,useragent)')
+const info = stmt.run(logdata.remoteaddr,logdata.remoteuser, logdata.time, logdata.method,logdata.method,logdata.url,logdata.protocol,logdata.httpversion, logdata.satus,logdata.referer, logdata.useragent)
+console.log(info)
+next()
+})
+
 const server = app.listen(port, () => {
     console.log('App is running on port %PORT%'.replace('%PORT%',port))
 })
 
+if(args.log){
+const accesLog = fs.createWriteStream('access.log', { flags: 'a' })
+// Set up the access logging middleware
+app.use(morgan('combined', { stream: accesLog }))
+}
+
+if(args.debug){
+  app.get('/app/log/access',(req,res, next) => {
+    res.type('text/plain')
+    res.json({"message":"your API works! (200)"});
+    res.status(200).end('200 OK')
+
+    app.get('/app/log/access',(req,res, next) =>{
+      errorx = new ERROR;
+      throw errorx;
+    })
+
+})
 
 
-
+}
 
 app.get('/app/',(req,res, next) => {
     res.type('text/plain')
@@ -67,7 +126,7 @@ app.get('/app/flips/:number/',(req,res) =>{
      }
         
 
-app.get('/app/flip/',(req,res) =>{
+app.get('/app/flip/',(req,res, next) =>{
   res.setHeader("showing", "alex")
 var flip = coinFlip()//need to create coinFlip above
 res.status(200).json({'flip': flip})
@@ -75,7 +134,7 @@ res.type("text/plain")
 })
 
 //lol
-app.get('/app/flip/call/heads',(req,res) =>{
+app.get('/app/flip/call/heads',(req,res, next) =>{
   res.setHeader("showing", "alex")
 var flipHead = "heads"//need to create coinFlip above
 res.status(200).json(flipACoin(flipHead))
