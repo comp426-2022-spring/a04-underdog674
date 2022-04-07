@@ -90,11 +90,11 @@ if(args.debug){
 
 
 app.get('/app/',(req,res, next) => {
-    res.type('text/plain')
+   
     res.json({"message":"your API works! (200)"});
     res.status(200).end('200 OK')
 })
-
+// BELOW THIS POINT THE USER FUNCTIONS ARENT NEEDED
 app.post("/app/new/user",(req,res,next) => {
     let data = {
       user: req.body.username,
