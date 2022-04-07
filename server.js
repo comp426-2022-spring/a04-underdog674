@@ -1,18 +1,6 @@
-const express = require('express')
+
 const minimist = require("minimist")
-const app = express()
-const db = require("./database.js")
-var md5 = require("md5")
 
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-
-const args = minimist(process.argv.slice(2))
-console.log(args)
-args["port"]
-const port = args.port || 5000
-console.log(args)
-// Store help text 
 const help = (`
 server.js [options]
 
@@ -34,6 +22,22 @@ if (args.help || args.h) {
     console.log(help)
     process.exit(0)
 }
+const express = require('express')
+
+const app = express()
+const db = require("./database.js")
+var md5 = require("md5")
+
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+const args = minimist(process.argv.slice(2))
+console.log(args)
+args["port"]
+const port = args.port || 5000
+console.log(args)
+// Store help text 
+
 
 
 app.use((req, res, next) =>{
@@ -51,7 +55,7 @@ app.use((req, res, next) =>{
 }
 console.log(logdata);
 const stmt = db.prepare('INSERT INTO accesslog (remoteaddr,remoteuser,time,method,url,protocol,httpversion,status,referer,useragent) VALUES (?,?,?,?,?,?,?,?,?,?)');
-const info = stmt.run(logdata.remoteaddr,logdata.remoteuser, logdata.time, logdata.method,logdata.method,logdata.url,logdata.protocol,logdata.httpversion, logdata.satus,logdata.referer, logdata.useragent)
+const info = stmt.run(logdata.remoteaddr,logdata.remoteuser, logdata.time, logdata.method,logdata.url,logdata.protocol,logdata.httpversion, logdata.satus,logdata.referer, logdata.useragent)
 //console.log(info)
 next()
 })
