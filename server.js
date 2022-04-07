@@ -33,6 +33,16 @@ app.get('/app/',(req,res, next) => {
     res.status(200).end('200 OK')
 })
 
+app.post("/app/new/user",(req,res,next) => {
+    let data = {
+      user: req.body.username,
+      pass: req.body.password
+    }
+    const stmt = db.prepare('INSERT INTO userinfo (username, password) VALUES (?,?)')
+    const info = stmt.run(data.user, data.pass)
+    res.status(200).json(info)
+})
+
 app.get('/app/flips/:number/',(req,res) =>{
   res.setHeader("showing", "alex")
     res.status(200).json({'raw': coinFlips(req.params.number), 'summary': countFlips(coinFlips(req.params.number))})
