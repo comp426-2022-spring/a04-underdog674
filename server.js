@@ -64,11 +64,14 @@ const server = app.listen(port, () => {
     console.log('App is running on port %PORT%'.replace('%PORT%',port))
 })
 
-if(args.log){
+
+if(args.log == 'false'){}
+else{
 const accesLog = fs.createWriteStream('access.log', { flags: 'a' })
 // Set up the access logging middleware
 app.use(morgan('combined', { stream: accesLog }))
 }
+
 
 if(args.debug){
   app.get('/app/log/access',(req,res, next) => {
